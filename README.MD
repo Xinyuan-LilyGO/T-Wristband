@@ -8,6 +8,9 @@
 
   * If `Setup26_TTGO_T_Wristband.h.h` is not found, manually move `User_Setups\ Setup26_TTGO_T_Wristband.h` to `C:\Users\UserName\Documents\Arduino\libraries\ TFT_eSPI\User_Setups`
 
+- Configure TFT_eSPI as shown below
+![](image/1.jpg)
+
 ## 3.Board choose
 - The board can choose `ESP32 Dev Module`, other settings can keep the default
 
