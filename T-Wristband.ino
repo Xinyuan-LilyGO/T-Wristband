@@ -10,10 +10,11 @@
 #define TP_PIN_PIN          33
 #define I2C_SDA_PIN         21
 #define I2C_SCL_PIN         22
-#define IMU_INT_PIN         4       
+#define IMU_INT_PIN         4
 #define RTC_INT_PIN         34
 #define BATT_ADC_PIN        35
 #define VBUS_PIN            36
+#define TP_PWR_PIN          25
 
 extern MPU9250 IMU;
 
@@ -118,6 +119,7 @@ void setup(void)
 {
     Serial.begin(115200);
     pinMode(TP_PIN_PIN, INPUT);
+
     tft.init();
     tft.setRotation(1);
     tft.setSwapBytes(true);
@@ -211,6 +213,10 @@ void setup(void)
     tft.setTextColor(TFT_YELLOW, TFT_BLACK); // Note: the new fonts do not draw the background colour
 
     targetTime = millis() + 1000;
+
+    //! Must be set to pull-up output mode in order to wake up in deep sleep mode
+    pinMode(TP_PWR, PULLUP);
+    digitalWrite(TP_PWR, HIGH);
 }
 
 
@@ -309,8 +315,7 @@ void Volt_Show()
     }
 }
 
-
-void func()
+void loop()
 {
     if (digitalRead(TP_PIN_PIN) == HIGH) {
         Serial.println("PRESSS");
@@ -346,12 +351,6 @@ void func()
     default:
         break;
     }
-}
-
-
-void loop()
-{
-    func();
 }
 
 
