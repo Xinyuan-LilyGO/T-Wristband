@@ -2,6 +2,7 @@
 
 ## 1.Install the following dependency library files:
 - [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
+- [PCF8563_Library](https://github.com/lewisxhe/PCF8563_Library)
 
 ## 2.TFT_eSPI settings
 - Install TFT_eSPI, in `TFT_eSPI/User_Setup_Select.h`, comment out the default settings `#include <User_Setup.h>` , select `#include <User_Setups/Setup26_TTGO_T_Wristband.h.h>` , Save Settings.
