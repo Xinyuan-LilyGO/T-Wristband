@@ -1,3 +1,4 @@
+
 #include <pcf8563.h>
 #include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
@@ -6,6 +7,20 @@
 #include "sensor.h"
 #include "esp_adc_cal.h"
 #include "ttgo.h"
+
+#define FACTORY_HW_TEST     //! Test RTC and WiFi scan when enabled
+// #define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
+
+
+#ifdef ARDUINO_OTA_UPDATE
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
+
+const char *ssid = "YOU_WIFI_SSID";
+const char *password = "YOU_WIFI_PASSWORD";
+#endif
+
 
 #define TP_PIN_PIN          33
 #define I2C_SDA_PIN         21
@@ -24,7 +39,7 @@ PCF8563_Class rtc;
 char buff[256];
 bool rtcIrq = false;
 bool initial = 1;
-bool accShow = false;
+bool otaStart = false;
 
 uint8_t func_select = 0;
 uint8_t omm = 99;
@@ -34,19 +49,10 @@ uint32_t colour = 0;
 int vref = 1100;
 
 
-static uint8_t conv2d(const char *p)
-{
-    uint8_t v = 0;
-    if ('0' <= *p && *p <= '9')
-        v = *p - '0';
-    return 10 * v + *++p - '0';
-}
+uint8_t hh, mm, ss ;
 
-uint8_t hh = conv2d(__TIME__), mm = conv2d(__TIME__ + 3), ss = conv2d(__TIME__ + 6); // Get H, M, S from compile time
 
-bool  pcf8563_found = 0, imu_found = 0;
-
-static void scanI2Cdevice(void)
+void scanI2Cdevice(void)
 {
     uint8_t err, addr;
     int nDevices = 0;
@@ -60,14 +66,6 @@ static void scanI2Cdevice(void)
             Serial.print(addr, HEX);
             Serial.println(" !");
             nDevices++;
-            if (addr == PCF8563_SLAVE_ADDRESS) {
-                tft.println("Detected PCF8563");
-                pcf8563_found = 1;
-            }
-            if (addr = MPU9250_ADDRESS) {
-                tft.println("Detected MPU9250");
-                imu_found = 1;
-            }
         } else if (err == 4) {
             Serial.print("Unknow error at address 0x");
             if (addr < 16)
@@ -115,23 +113,22 @@ void wifi_scan()
     WiFi.mode(WIFI_OFF);
 }
 
-void setup(void)
+
+void drawProgressBar(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, uint8_t percentage, uint16_t frameColor, uint16_t barColor)
 {
-    Serial.begin(115200);
-    pinMode(TP_PIN_PIN, INPUT);
+    if (percentage == 0) {
+        tft.fillRoundRect(x0, y0, w, h, 3, TFT_BLACK);
+    }
+    uint8_t margin = 2;
+    uint16_t barHeight = h - 2 * margin;
+    uint16_t barWidth = w - 2 * margin;
+    tft.drawRoundRect(x0, y0, w, h, 3, frameColor);
+    tft.fillRect(x0 + margin, y0 + margin, barWidth * percentage / 100.0, barHeight, barColor);
+}
 
-    tft.init();
-    tft.setRotation(1);
-    tft.setSwapBytes(true);
-    tft.pushImage(0, 0,  160, 80, ttgo);
-    tft.setSwapBytes(false);
-    delay(5000);
 
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_GREEN, TFT_BLACK); // Note: the new fonts do not draw the background colour
-
-    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
-    Wire.setClock(400000);
+void factoryTest()
+{
     scanI2Cdevice();
     delay(2000);
 
@@ -153,6 +150,7 @@ void setup(void)
         tft.drawString("Write DateTime PASS", 0, 0);
     }
 
+    delay(2000);
 
     //! RTC Interrupt Test
     pinMode(RTC_INT_PIN, INPUT_PULLUP); //need change to rtc_pin
@@ -186,14 +184,96 @@ void setup(void)
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.fillScreen(TFT_BLACK);
     tft.drawString("RTC Interrupt PASS", 0, 0);
-
-
-    setupMPU9250();
-
+    delay(2000);
 
     wifi_scan();
+    delay(2000);
+}
+
+void setupWiFi()
+{
+#ifdef ARDUINO_OTA_UPDATE
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+        Serial.println("Connection Failed! Rebooting...");
+        delay(5000);
+        ESP.restart();
+    }
+
+    Serial.println("Ready");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+#endif
+}
+
+void setupOTA()
+{
+#ifdef ARDUINO_OTA_UPDATE
+    // Port defaults to 3232
+    // ArduinoOTA.setPort(3232);
+
+    // Hostname defaults to esp3232-[MAC]
+    ArduinoOTA.setHostname("T-Wristband");
+
+    // No authentication by default
+    // ArduinoOTA.setPassword("admin");
+
+    // Password can be set with it's md5 value as well
+    // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
+    // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
+
+    ArduinoOTA.onStart([]() {
+        String type;
+        if (ArduinoOTA.getCommand() == U_FLASH)
+            type = "sketch";
+        else // U_SPIFFS
+            type = "filesystem";
+
+        // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+        Serial.println("Start updating " + type);
+        otaStart = true;
+        tft.fillScreen(TFT_BLACK);
+        tft.drawString("Updating...", tft.width() / 2 - 20, 55 );
+    })
+    .onEnd([]() {
+        Serial.println("\nEnd");
+        delay(500);
+    })
+    .onProgress([](unsigned int progress, unsigned int total) {
+        // Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+        int percentage = (progress / (total / 100));
+        tft.setTextDatum(TC_DATUM);
+        tft.setTextPadding(tft.textWidth(" 888% "));
+        tft.drawString(String(percentage) + "%", 145, 35);
+        drawProgressBar(10, 30, 120, 15, percentage, TFT_WHITE, TFT_BLUE);
+    })
+    .onError([](ota_error_t error) {
+        Serial.printf("Error[%u]: ", error);
+        if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+        else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+        else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+        else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+        else if (error == OTA_END_ERROR) Serial.println("End Failed");
+
+        tft.fillScreen(TFT_BLACK);
+        tft.drawString("Update Failed", tft.width() / 2 - 20, 55 );
+        delay(3000);
+        otaStart = false;
+        initial = 1;
+        targetTime = millis() + 1000;
+        tft.fillScreen(TFT_BLACK);
+        tft.setTextDatum(TL_DATUM);
+        omm = 99;
+    });
+
+    ArduinoOTA.begin();
+#endif
+}
 
 
+void setupADC()
+{
     esp_adc_cal_characteristics_t adc_chars;
     esp_adc_cal_value_t val_type = esp_adc_cal_characterize((adc_unit_t)ADC_UNIT_1, (adc_atten_t)ADC1_CHANNEL_6, (adc_bits_width_t)ADC_WIDTH_BIT_12, 1100, &adc_chars);
     //Check type of calibration value used to characterize ADC
@@ -205,8 +285,46 @@ void setup(void)
     } else {
         Serial.println("Default Vref: 1100mV");
     }
+}
 
-    tft.setCursor(0, 0);
+void setupRTC()
+{
+    rtc.begin(Wire);
+    //Check if the RTC clock matches, if not, use compile time
+    rtc.check();
+
+    RTC_Date datetime = rtc.getDateTime();
+    hh = datetime.hour;
+    mm = datetime.minute;
+    ss = datetime.second;
+}
+
+void setup(void)
+{
+    Serial.begin(115200);
+
+    tft.init();
+    tft.setRotation(1);
+    tft.setSwapBytes(true);
+    tft.pushImage(0, 0,  160, 80, ttgo);
+    tft.setSwapBytes(false);
+
+    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
+    Wire.setClock(400000);
+
+#ifdef FACTORY_HW_TEST
+    factoryTest();
+#endif
+
+    setupRTC();
+
+    setupMPU9250();
+
+    setupADC();
+
+    setupWiFi();
+
+    setupOTA();
 
     tft.fillScreen(TFT_BLACK);
 
@@ -214,42 +332,38 @@ void setup(void)
 
     targetTime = millis() + 1000;
 
+    pinMode(TP_PIN_PIN, INPUT);
     //! Must be set to pull-up output mode in order to wake up in deep sleep mode
-    pinMode(TP_PWR, PULLUP);
-    digitalWrite(TP_PWR, HIGH);
+    pinMode(TP_PWR_PIN, PULLUP);
+    digitalWrite(TP_PWR_PIN, HIGH);
 }
 
+String getVoltage()
+{
+    uint16_t v = analogRead(BATT_ADC_PIN);
+    float battery_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
+    return String(battery_voltage) + "V";
+}
 
 void RTC_Show()
 {
     if (targetTime < millis()) {
+        RTC_Date datetime = rtc.getDateTime();
+        hh = datetime.hour;
+        mm = datetime.minute;
+        ss = datetime.second;
+        // Serial.printf("hh:%d mm:%d ss:%d\n", hh, mm, ss);
         targetTime = millis() + 1000;
-        ss++;              // Advance second
-        if (ss == 60) {
-            ss = 0;
-            omm = mm;
-            mm++;            // Advance minute
-            if (mm > 59) {
-                mm = 0;
-                hh++;          // Advance hour
-                if (hh > 23) {
-                    hh = 0;
-                }
-            }
-        }
-
         if (ss == 0 || initial) {
             initial = 0;
             tft.setTextColor(TFT_GREEN, TFT_BLACK);
-            tft.setCursor (8, 52);
+            tft.setCursor (8, 60);
             tft.print(__DATE__); // This uses the standard ADAFruit small font
-
-            tft.setTextColor(TFT_BLUE, TFT_BLACK);
-            tft.drawCentreString("It is windy", 120, 48, 2); // Next size up font 2
-
-            //tft.setTextColor(0xF81F, TFT_BLACK); // Pink
-            //tft.drawCentreString("12.34",80,100,6); // Large font 6 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 . : a p m
         }
+
+        tft.setTextColor(TFT_BLUE, TFT_BLACK);
+        tft.drawCentreString(getVoltage(), 120, 60, 1); // Next size up font 2
+
 
         // Update digital time
         uint8_t xpos = 6;
@@ -300,30 +414,24 @@ void IMU_Show()
 }
 
 
-void Volt_Show()
-{
-    static uint64_t timeStamp = 0;
-    if (millis() - timeStamp > 1000) {
-        timeStamp = millis();
-        uint16_t v = analogRead(BATT_ADC_PIN);
-        float battery_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
-        String voltage = "Voltage :" + String(battery_voltage) + "V";
-        Serial.println(voltage);
-        tft.fillScreen(TFT_BLACK);
-        tft.setTextDatum(MC_DATUM);
-        tft.drawString(voltage,  tft.width() / 2, tft.height() / 2 );
-    }
-}
+
 
 void loop()
 {
+#ifdef ARDUINO_OTA_UPDATE
+    ArduinoOTA.handle();
+#endif
+
+    //! If OTA starts, skip the following operation
+    if (otaStart)
+        return;
+
     if (digitalRead(TP_PIN_PIN) == HIGH) {
-        Serial.println("PRESSS");
         initial = 1;
         targetTime = millis() + 1000;
         tft.fillScreen(TFT_BLACK);
         omm = 99;
-        func_select = func_select + 1 > 3 ? 0 : func_select + 1;
+        func_select = func_select + 1 > 2 ? 0 : func_select + 1;
         delay(100);
     }
     switch (func_select) {
@@ -334,9 +442,6 @@ void loop()
         IMU_Show();
         break;
     case 2:
-        Volt_Show();
-        break;
-    case 3:
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
         tft.drawString("Press again to wake up",  tft.width() / 2, tft.height() / 2 );
