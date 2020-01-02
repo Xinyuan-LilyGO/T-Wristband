@@ -8,8 +8,8 @@
 #include "esp_adc_cal.h"
 #include "ttgo.h"
 
-#define FACTORY_HW_TEST     //! Test RTC and WiFi scan when enabled
-// #define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
+// #define FACTORY_HW_TEST     //! Test RTC and WiFi scan when enabled
+#define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
 
 
 #ifdef ARDUINO_OTA_UPDATE
@@ -17,8 +17,10 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-const char *ssid = "YOU_WIFI_SSID";
-const char *password = "YOU_WIFI_PASSWORD";
+// const char *ssid = "YOU_WIFI_SSID";
+// const char *password = "YOU_WIFI_PASSWORD";
+const char *ssid = "Xiaomi";
+const char *password = "12345678";
 #endif
 
 
@@ -30,6 +32,7 @@ const char *password = "YOU_WIFI_PASSWORD";
 #define BATT_ADC_PIN        35
 #define VBUS_PIN            36
 #define TP_PWR_PIN          25
+#define LED_PIN             4
 
 extern MPU9250 IMU;
 
@@ -336,6 +339,8 @@ void setup(void)
     //! Must be set to pull-up output mode in order to wake up in deep sleep mode
     pinMode(TP_PWR_PIN, PULLUP);
     digitalWrite(TP_PWR_PIN, HIGH);
+
+    pinMode(LED_PIN, INPUT);
 }
 
 String getVoltage()
@@ -432,7 +437,9 @@ void loop()
         tft.fillScreen(TFT_BLACK);
         omm = 99;
         func_select = func_select + 1 > 2 ? 0 : func_select + 1;
+        digitalWrite(LED_PIN, HIGH);
         delay(100);
+        digitalWrite(LED_PIN, LOW);
     }
     switch (func_select) {
     case 0:
