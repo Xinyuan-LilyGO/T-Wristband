@@ -17,10 +17,8 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-// const char *ssid = "YOU_WIFI_SSID";
-// const char *password = "YOU_WIFI_PASSWORD";
-const char *ssid = "Xiaomi";
-const char *password = "12345678";
+const char *ssid = "YOU_WIFI_SSID";
+const char *password = "YOU_WIFI_PASSWORD";
 #endif
 
 
