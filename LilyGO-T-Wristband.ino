@@ -8,6 +8,9 @@
 #include "esp_adc_cal.h"
 #include "ttgo.h"
 
+//  git clone -b development https://github.com/tzapu/WiFiManager.git
+#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
+
 // #define FACTORY_HW_TEST     //! Test RTC and WiFi scan when enabled
 #define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
 
@@ -16,16 +19,13 @@
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-
-const char *ssid = "YOU_WIFI_SSID";
-const char *password = "YOU_WIFI_PASSWORD";
 #endif
 
 
 #define TP_PIN_PIN          33
 #define I2C_SDA_PIN         21
 #define I2C_SCL_PIN         22
-#define IMU_INT_PIN         4
+#define IMU_INT_PIN         38
 #define RTC_INT_PIN         34
 #define BATT_ADC_PIN        35
 #define VBUS_PIN            36
@@ -36,6 +36,7 @@ extern MPU9250 IMU;
 
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 PCF8563_Class rtc;
+WiFiManager wifiManager;
 
 char buff[256];
 bool rtcIrq = false;
@@ -49,9 +50,26 @@ uint32_t targetTime = 0;       // for next 1 second timeout
 uint32_t colour = 0;
 int vref = 1100;
 
+bool pressed = false;
+uint32_t pressedTime = 0;
 
 uint8_t hh, mm, ss ;
 
+void configModeCallback (WiFiManager *myWiFiManager)
+{
+    Serial.println("Entered config mode");
+    Serial.println(WiFi.softAPIP());
+    //if you used auto generated SSID, print it
+    Serial.println(myWiFiManager->getConfigPortalSSID());
+
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_WHITE);
+    tft.drawString("Connect hotspot name ",  20, tft.height() / 2 - 20);
+    tft.drawString("configure wrist",  35, tft.height() / 2  + 20);
+    tft.setTextColor(TFT_GREEN);
+    tft.drawString("\"T-Wristband\"",  40, tft.height() / 2 );
+
+}
 
 void scanI2Cdevice(void)
 {
@@ -194,17 +212,11 @@ void factoryTest()
 void setupWiFi()
 {
 #ifdef ARDUINO_OTA_UPDATE
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
-    while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-        Serial.println("Connection Failed! Rebooting...");
-        delay(5000);
-        ESP.restart();
-    }
-
-    Serial.println("Ready");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+    WiFiManager wifiManager;
+    //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+    wifiManager.setAPCallback(configModeCallback);
+    wifiManager.setBreakAfterConfig(true);          // Without this saveConfigCallback does not get fired
+    wifiManager.autoConnect("T-Wristband");
 #endif
 }
 
@@ -338,7 +350,7 @@ void setup(void)
     pinMode(TP_PWR_PIN, PULLUP);
     digitalWrite(TP_PWR_PIN, HIGH);
 
-    pinMode(LED_PIN, INPUT);
+    pinMode(LED_PIN, OUTPUT);
 }
 
 String getVoltage()
@@ -418,7 +430,6 @@ void IMU_Show()
 
 
 
-
 void loop()
 {
 #ifdef ARDUINO_OTA_UPDATE
@@ -430,15 +441,31 @@ void loop()
         return;
 
     if (digitalRead(TP_PIN_PIN) == HIGH) {
-        initial = 1;
-        targetTime = millis() + 1000;
-        tft.fillScreen(TFT_BLACK);
-        omm = 99;
-        func_select = func_select + 1 > 2 ? 0 : func_select + 1;
-        digitalWrite(LED_PIN, HIGH);
-        delay(100);
-        digitalWrite(LED_PIN, LOW);
+        if (!pressed) {
+            initial = 1;
+            targetTime = millis() + 1000;
+            tft.fillScreen(TFT_BLACK);
+            omm = 99;
+            func_select = func_select + 1 > 2 ? 0 : func_select + 1;
+            digitalWrite(LED_PIN, HIGH);
+            delay(100);
+            digitalWrite(LED_PIN, LOW);
+            pressed = true;
+            pressedTime = millis();
+        } else {
+            if (millis() - pressedTime > 3000) {
+                tft.fillScreen(TFT_BLACK);
+                tft.drawString("Reset WiFi Setting",  20, tft.height() / 2 );
+                delay(3000);
+                wifiManager.resetSettings();
+                wifiManager.erase(true);
+                esp_restart();
+            }
+        }
+    } else {
+        pressed = false;
     }
+
     switch (func_select) {
     case 0:
         RTC_Show();
