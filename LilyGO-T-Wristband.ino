@@ -7,6 +7,7 @@
 #include "sensor.h"
 #include "esp_adc_cal.h"
 #include "ttgo.h"
+#include "charge.h"
 
 //  git clone -b development https://github.com/tzapu/WiFiManager.git
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
@@ -31,6 +32,7 @@
 #define VBUS_PIN            36
 #define TP_PWR_PIN          25
 #define LED_PIN             4
+#define CHARGE_PIN          32
 
 extern MPU9250 IMU;
 
@@ -52,6 +54,7 @@ int vref = 1100;
 
 bool pressed = false;
 uint32_t pressedTime = 0;
+bool charge_indication = false;
 
 uint8_t hh, mm, ss ;
 
@@ -320,7 +323,6 @@ void setup(void)
     tft.setRotation(1);
     tft.setSwapBytes(true);
     tft.pushImage(0, 0,  160, 80, ttgo);
-    tft.setSwapBytes(false);
 
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     Wire.setClock(400000);
@@ -351,6 +353,15 @@ void setup(void)
     digitalWrite(TP_PWR_PIN, HIGH);
 
     pinMode(LED_PIN, OUTPUT);
+
+    pinMode(CHARGE_PIN, INPUT_PULLUP);
+    attachInterrupt(CHARGE_PIN, [] {
+        charge_indication = true;
+    }, CHANGE);
+
+    if (digitalRead(CHARGE_PIN) == LOW) {
+        charge_indication = true;
+    }
 }
 
 String getVoltage()
@@ -429,7 +440,6 @@ void IMU_Show()
 }
 
 
-
 void loop()
 {
 #ifdef ARDUINO_OTA_UPDATE
@@ -439,6 +449,16 @@ void loop()
     //! If OTA starts, skip the following operation
     if (otaStart)
         return;
+
+    if (charge_indication) {
+        charge_indication = false;
+        if (digitalRead(CHARGE_PIN) == LOW) {
+            tft.pushImage(140, 55, 34, 16, charge);
+        } else {
+            tft.fillRect(140, 55, 34, 16, TFT_BLACK);
+        }
+    }
+
 
     if (digitalRead(TP_PIN_PIN) == HIGH) {
         if (!pressed) {
