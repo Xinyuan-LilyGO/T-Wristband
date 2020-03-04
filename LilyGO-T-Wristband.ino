@@ -453,9 +453,9 @@ void loop()
     if (charge_indication) {
         charge_indication = false;
         if (digitalRead(CHARGE_PIN) == LOW) {
-            tft.pushImage(140, 55, 34, 16, charge);
+            tft.pushImage(140, 55, 17, 32, charge);
         } else {
-            tft.fillRect(140, 55, 34, 16, TFT_BLACK);
+            tft.fillRect(140, 55, 17, 32, TFT_BLACK);
         }
     }
 
