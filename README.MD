@@ -1,16 +1,19 @@
 # T-Wristband
 
-## 1.Install the following dependency library files:
+## 1.Install the universal CP210x driver:
+- [Universal CP210x driver](CP210x_Universal_Windows_Driver.zip)
+
+## 2.Install the following dependency library files:
 - [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
 - [PCF8563_Library](https://github.com/lewisxhe/PCF8563_Library)
 
-## 2.TFT_eSPI settings
+## 3.TFT_eSPI settings
 - Install TFT_eSPI, in `TFT_eSPI/User_Setup_Select.h`, comment out the default settings `#include <User_Setup.h>` , select `#include <User_Setups/Setup26_TTGO_T_Wristband.h.h>` , Save Settings.
 
 - Configure TFT_eSPI as shown below
 ![](image/1.jpg)
 
-### 3. Precautions
+### 4. Precautions
 - **WiFiManager** is used for WiFi settings by default. Please connect to `T-Wristband` hotspot for network configuration for the first time.
 - The OTA update and upgrade is enabled by default. After the WiFi configuration is complete, you can select `T-Wristband` from the port in the Arduino IDE to perform wireless upgrades to get rid of the constraints of downloading the data cable. ***Please update your own code. Please keep the ota upgrade part, otherwise the upgrade may cause failure Air upgrade again***
 ![](image/2.jpg)
@@ -18,10 +21,10 @@
 - Touch and hold the button for three seconds to reset the WiFi and restart. After resetting, you need to configure again.
 - Note that `WiFiManager` uses the development branch. Please make sure that the [development branch](https://github.com/tzapu/WiFiManager/tree/development) is cloned, otherwise it will not compile successfully. There is a WiFiManager library used in the libdeps directory. **If you cannot compile, please copy the files in the libdeps directory to `C:\Documents\Arduino\libraries`**
 
-## 4.Board choose
+## 5.Board choose
 - The board can choose `ESP32 Dev Module`, other settings can keep the default
 
-## 5.Pinout
+## 6.Pinout
 
 | Name              | Pin    |
 | ----------------- | ------ |
