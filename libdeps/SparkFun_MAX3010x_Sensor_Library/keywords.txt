@@ -1,0 +1,81 @@
+#######################################
+# Syntax Coloring Map 
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MAX30105	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin			KEYWORD2
+setup 			KEYWORD2
+available		KEYWORD2
+getRed			KEYWORD2
+getIR			KEYWORD2
+getGreen		KEYWORD2
+readTemperature 	KEYWORD2
+readTemperatureF 	KEYWORD2
+
+check		KEYWORD2
+getRed		KEYWORD2
+getIR		KEYWORD2
+getGreen		KEYWORD2
+
+softReset	KEYWORD2
+shutDown		KEYWORD2
+wakeUp		KEYWORD2
+setLEDMode		KEYWORD2
+setADCRange		KEYWORD2
+setSampleRate		KEYWORD2
+setPulseWidth		KEYWORD2
+setPulseAmplitudeRed		KEYWORD2
+setPulseAmplitudeIR		KEYWORD2
+setPulseAmplitudeGreen		KEYWORD2
+setPulseAmplitudeProximity		KEYWORD2
+setProximityThreshold		KEYWORD2
+enableSlot		KEYWORD2
+disableSlots		KEYWORD2
+getINT1		KEYWORD2
+getINT2		KEYWORD2
+enableAFULL		KEYWORD2
+disableAFULL		KEYWORD2
+enableDATARDY		KEYWORD2
+disableDATARDY		KEYWORD2
+enableALCOVF		KEYWORD2
+disableALCOVF		KEYWORD2
+enablePROXINT		KEYWORD2
+disablePROXINT		KEYWORD2
+enableDIETEMPRDY		KEYWORD2
+disableDIETEMPRDY		KEYWORD2
+
+setFIFOAverage		KEYWORD2
+enableFIFORollover		KEYWORD2
+disableFIFORollover		KEYWORD2
+setFIFOAlmostFull		KEYWORD2
+  
+getFIFORed			KEYWORD2
+getFIFOIR			KEYWORD2
+getFIFOGreen		KEYWORD2
+getWritePointer		KEYWORD2
+getReadPointer		KEYWORD2
+clearFIFO		KEYWORD2
+available		KEYWORD2
+
+nextSample		KEYWORD2
+
+setPROXINTTHRESH		KEYWORD2
+
+getRevisionID		KEYWORD2
+readPartID  		KEYWORD2
+
+readRegister8		KEYWORD2
+writeRegister8		KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################

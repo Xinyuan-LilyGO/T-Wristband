@@ -28,7 +28,6 @@ github:https://github.com/lewisxhe/PCF8563_Library
 */
 /////////////////////////////////////////////////////////////////
 #include "pcf8563.h"
-#include <time.h>
 #include <sys/time.h>
 
 int PCF8563_Class::begin(TwoWire &port, uint8_t addr)
