@@ -165,7 +165,12 @@ uint16_t setupIMU()
 
     // Call imu.begin() to initialize the sensor and instill
     // it with our new settings.
-    return imu.begin(LSM9DS1_AG_ADDR(1), LSM9DS1_M_ADDR(1), Wire); // set addresses and wire port
+    bool r =  imu.begin(LSM9DS1_AG_ADDR(1), LSM9DS1_M_ADDR(1), Wire); // set addresses and wire port
+    if (r) {
+        imu.sleepGyro(false);
+        return true;
+    }
+    return false;
 }
 
 
