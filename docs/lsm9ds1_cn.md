@@ -33,6 +33,8 @@
     - 按下第二次 将进入深度睡眠
     - 在深度睡眠中,再次触碰 将唤醒手环
 
+8. `ENABLE_BLE_DATA_TRANSMISSION` 宏用于测试BLE传输IMU数据示例 ,默认开启, 可以使用`nRF Connect` , `LightBlue` 等APP 进行连接查看数据
+
 ## 数据手册
 - [lsm9ds1 Sensor](https://www.st.com/resource/en/datasheet/lsm9ds1.pdf)
 - [ST7735](http://www.displayfuture.com/Display/datasheet/controller/ST7735.pdf)
