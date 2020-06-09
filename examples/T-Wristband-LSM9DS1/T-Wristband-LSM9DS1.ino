@@ -10,11 +10,10 @@
 #include "charge.h"
 #include <SparkFunLSM9DS1.h>
 
-//  git clone -b development https://github.com/tzapu/WiFiManager.git
-#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
+// #define FACTORY_HW_TEST          //! Test RTC and WiFi scan when enabled
+// #define ARDUINO_OTA_UPDATE       //! Enable this line OTA update
+#define ENABLE_BLE_DATA_TRANSMISSION    //! Turn on BLE to transmit IMU data
 
-// #define FACTORY_HW_TEST     //! Test RTC and WiFi scan when enabled
-// #define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
 
 #ifndef ST7735_SLPIN
 #define ST7735_SLPIN    0x10
@@ -33,11 +32,10 @@
 #define INT2_PIN_DRDY       39
 #define INTM_PIN_THS        37
 #define RDYM_PIN            36
-
+#define MOTOR_PIN           14
 
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 PCF8563_Class rtc;
-WiFiManager wifiManager;
 LSM9DS1 imu; // Create an LSM9DS1 object to use from here on.
 
 
@@ -63,7 +61,129 @@ uint8_t hh, mm, ss ;
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+//  git clone -b development https://github.com/tzapu/WiFiManager.git
+#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
+WiFiManager wifiManager;
+
+void configModeCallback (WiFiManager *myWiFiManager)
+{
+    Serial.println("Entered config mode");
+    Serial.println(WiFi.softAPIP());
+    //if you used auto generated SSID, print it
+    Serial.println(myWiFiManager->getConfigPortalSSID());
+
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_WHITE);
+    tft.drawString("Connect hotspot name ",  20, tft.height() / 2 - 20);
+    tft.drawString("configure wrist",  35, tft.height() / 2  + 20);
+    tft.setTextColor(TFT_GREEN);
+    tft.drawString("\"T-Wristband\"",  40, tft.height() / 2 );
+
+}
+
+
+void drawProgressBar(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, uint8_t percentage, uint16_t frameColor, uint16_t barColor)
+{
+    if (percentage == 0) {
+        tft.fillRoundRect(x0, y0, w, h, 3, TFT_BLACK);
+    }
+    uint8_t margin = 2;
+    uint16_t barHeight = h - 2 * margin;
+    uint16_t barWidth = w - 2 * margin;
+    tft.drawRoundRect(x0, y0, w, h, 3, frameColor);
+    tft.fillRect(x0 + margin, y0 + margin, barWidth * percentage / 100.0, barHeight, barColor);
+}
+
+
+#endif  /*ARDUINO_OTA_UPDATE*/
+
+
+#ifdef  ENABLE_BLE_DATA_TRANSMISSION
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLE2902.h>
+
+#define SENSOR_SERVICE_UUID                 "4fafc301-1fb5-459e-8fcc-c5c9c331914b"
+#define SENSOR_CHARACTERISTIC_UUID          "beb5483c-36e1-4688-b7f5-ea07361b26a8"
+static BLECharacteristic *pSensorCharacteristic = nullptr;
+static BLEDescriptor  *pSensorDescriptor = nullptr;
+
+static bool deviceConnected = false;
+static bool enableNotify = false;
+
+class DeviceServerCallbacks: public BLEServerCallbacks
+{
+    void onConnect(BLEServer *pServer)
+    {
+        deviceConnected = true;
+        Serial.println("Device connect");
+    };
+
+    void onDisconnect(BLEServer *pServer)
+    {
+        deviceConnected = false;
+        enableNotify = false;
+        Serial.println("Device disconnect");
+    }
+};
+
+class SensorDescriptorCallbacks: public BLEDescriptorCallbacks
+{
+    void onWrite(BLEDescriptor *pDescriptor)
+    {
+        uint8_t *value = pDescriptor->getValue();
+        Serial.print("SensorDescriptorCallbacks:");
+        enableNotify = value[0] ? true : false;
+    }
+    void onRead(BLEDescriptor *pDescriptor)
+    {
+
+    }
+};
 #endif
+
+
+void setupBLE()
+{
+#ifdef  ENABLE_BLE_DATA_TRANSMISSION
+    BLEDevice::init("T-Wristband");
+
+
+    BLEServer *pServer = BLEDevice::createServer();
+
+    pServer->setCallbacks(new DeviceServerCallbacks());
+
+    /*Sensor Service*/
+    BLEService *pSensorService = pServer->createService(SENSOR_SERVICE_UUID);
+
+    pSensorCharacteristic = pSensorService->createCharacteristic(
+                                SENSOR_CHARACTERISTIC_UUID,
+                                BLECharacteristic::PROPERTY_READ   |
+                                BLECharacteristic::PROPERTY_NOTIFY
+                            );
+    pSensorCharacteristic->addDescriptor(new BLE2902());
+
+    pSensorDescriptor = pSensorCharacteristic->getDescriptorByUUID("2902");
+
+    pSensorDescriptor->setCallbacks(new SensorDescriptorCallbacks());
+
+    pSensorService->start();
+
+    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+
+    pAdvertising->addServiceUUID(SENSOR_SERVICE_UUID);
+
+    pAdvertising->setScanResponse(true);
+
+    pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
+
+    pAdvertising->setMinPreferred(0x12);
+
+    BLEDevice::startAdvertising();
+
+#endif
+}
 
 
 void configureLSM9DS1Interrupts()
@@ -176,22 +296,6 @@ uint16_t setupIMU()
 
 
 
-void configModeCallback (WiFiManager *myWiFiManager)
-{
-    Serial.println("Entered config mode");
-    Serial.println(WiFi.softAPIP());
-    //if you used auto generated SSID, print it
-    Serial.println(myWiFiManager->getConfigPortalSSID());
-
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_WHITE);
-    tft.drawString("Connect hotspot name ",  20, tft.height() / 2 - 20);
-    tft.drawString("configure wrist",  35, tft.height() / 2  + 20);
-    tft.setTextColor(TFT_GREEN);
-    tft.drawString("\"T-Wristband\"",  40, tft.height() / 2 );
-
-}
-
 void scanI2Cdevice(void)
 {
     uint8_t err, addr;
@@ -253,18 +357,6 @@ void wifi_scan()
     WiFi.mode(WIFI_OFF);
 }
 
-
-void drawProgressBar(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, uint8_t percentage, uint16_t frameColor, uint16_t barColor)
-{
-    if (percentage == 0) {
-        tft.fillRoundRect(x0, y0, w, h, 3, TFT_BLACK);
-    }
-    uint8_t margin = 2;
-    uint16_t barHeight = h - 2 * margin;
-    uint16_t barWidth = w - 2 * margin;
-    tft.drawRoundRect(x0, y0, w, h, 3, frameColor);
-    tft.fillRect(x0 + margin, y0 + margin, barWidth * percentage / 100.0, barHeight, barColor);
-}
 
 
 void factoryTest()
@@ -462,13 +554,16 @@ void setup(void)
     }
 
     // After turning the IMU on, configure the interrupts:
-    configureLSM9DS1Interrupts();
+    // configureLSM9DS1Interrupts();
 
+    // Corrected ADC reference voltage
     setupADC();
 
     setupWiFi();
 
     setupOTA();
+
+    setupBLE();
 
     tft.fillScreen(TFT_BLACK);
 
@@ -481,16 +576,27 @@ void setup(void)
     pinMode(TP_PWR_PIN, PULLUP);
     digitalWrite(TP_PWR_PIN, HIGH);
 
+    // Set the indicator to output
     pinMode(LED_PIN, OUTPUT);
 
+    // Set the motor drive to output, if you have this module
+    pinMode(MOTOR_PIN, OUTPUT);
+
+    // Charging instructions, it is connected to IO32,
+    // when it changes, you need to change the flag to know whether charging is in progress
     pinMode(CHARGE_PIN, INPUT_PULLUP);
     attachInterrupt(CHARGE_PIN, [] {
         charge_indication = true;
     }, CHANGE);
 
+    // Check the charging instructions, if he is low, if it is true, then it is charging
     if (digitalRead(CHARGE_PIN) == LOW) {
         charge_indication = true;
     }
+
+
+    // Lower MCU frequency can effectively reduce current consumption and heat
+    setCpuFrequencyMhz(80);
 }
 
 String getVoltage()
@@ -502,12 +608,20 @@ String getVoltage()
 
 void RTC_Show()
 {
+    if (charge_indication) {
+        charge_indication = false;
+        if (digitalRead(CHARGE_PIN) == LOW) {
+            tft.pushImage(140, 55, 16, 16, charge);
+        } else {
+            tft.fillRect(140, 55, 16, 16, TFT_BLACK);
+        }
+    }
+
     if (targetTime < millis()) {
         RTC_Date datetime = rtc.getDateTime();
         hh = datetime.hour;
         mm = datetime.minute;
         ss = datetime.second;
-        // Serial.printf("hh:%d mm:%d ss:%d\n", hh, mm, ss);
         targetTime = millis() + 1000;
         if (ss == 0 || initial) {
             initial = 0;
@@ -551,30 +665,43 @@ void RTC_Show()
     }
 }
 
-void IMU_Show()
+void getIMU()
 {
-    tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextDatum(TL_DATUM);
     // Update the sensor values whenever new data is available
     if ( imu.gyroAvailable() ) {
         // To read from the gyroscope,  first call the
         // readGyro() function. When it exits, it'll update the
         // gx, gy, and gz variables with the most current data.
         imu.readGyro();
+    } else {
+        Serial.println("Invalid gyroscope");
     }
     if ( imu.accelAvailable() ) {
         // To read from the accelerometer, first call the
         // readAccel() function. When it exits, it'll update the
         // ax, ay, and az variables with the most current data.
         imu.readAccel();
+    } else {
+        Serial.println("Invalid accelerometer");
     }
     if ( imu.magAvailable() ) {
         // To read from the magnetometer, first call the
         // readMag() function. When it exits, it'll update the
         // mx, my, and mz variables with the most current data.
         imu.readMag();
+    } else {
+        Serial.println("Invalid magnetometer");
     }
+}
+
+void IMU_Show()
+{
+
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextDatum(TL_DATUM);
+
+    getIMU();
 
     snprintf(buff, sizeof(buff), "--  ACC  GYR   MAG");
     tft.drawString(buff, 0, 0);
@@ -585,6 +712,66 @@ void IMU_Show()
     snprintf(buff, sizeof(buff), "z %.2f  %.2f  %.2f", imu.calcAccel(imu.az), imu.calcGyro(imu.gz), imu.calcMag(imu.mz));
     tft.drawString(buff, 0, 48);
     delay(200);
+
+}
+
+
+void BLE_Transmission()
+{
+    typedef struct {
+        float ax;
+        float ay;
+        float az;
+        float gx;
+        float gy;
+        float gz;
+        float mx;
+        float my;
+        float mz;
+    } imu_data_t;
+
+    static uint32_t updataRate = 0;
+
+    if (millis() - updataRate < 1000) {
+        return;
+    }
+
+
+#ifdef ENABLE_BLE_DATA_TRANSMISSION
+
+    getIMU();
+
+
+    if (deviceConnected && enableNotify) {
+        // Create a structure to send data
+        imu_data_t data;
+        data.ax = imu.calcAccel(imu.ax);
+        data.ay = imu.calcAccel(imu.ay);
+        data.az = imu.calcAccel(imu.az);
+        data.gx = imu.calcGyro(imu.gx);
+        data.gy = imu.calcGyro(imu.gy);
+        data.gz = imu.calcGyro(imu.gz);
+        data.mx = imu.calcMag(imu.mx);
+        data.my = imu.calcMag(imu.my);
+        data.mx = imu.calcMag(imu.mx);
+
+        pSensorCharacteristic->setValue((uint8_t *)&data, sizeof(imu_data_t));
+
+        pSensorCharacteristic->notify();
+
+        uint8_t *ptr = (uint8_t *)&data;
+        Serial.print("[");
+        Serial.print(millis());
+        Serial.print("]");
+
+        for (int i = 0; i < sizeof(data); ++i) {
+            Serial.print(ptr[i], HEX);
+            Serial.print(" ");
+        }
+        Serial.println();
+    }
+#endif
+    updataRate = millis();
 }
 
 
@@ -598,28 +785,33 @@ void loop()
     if (otaStart)
         return;
 
-    if (charge_indication) {
-        charge_indication = false;
-        if (digitalRead(CHARGE_PIN) == LOW) {
-            tft.pushImage(140, 55, 16, 16, charge);
-        } else {
-            tft.fillRect(140, 55, 16, 16, TFT_BLACK);
-        }
-    }
-
     if (digitalRead(TP_PIN_PIN) == HIGH) {
         if (!pressed) {
             initial = 1;
             targetTime = millis() + 1000;
             tft.fillScreen(TFT_BLACK);
             omm = 99;
-            func_select = func_select + 1 > 2 ? 0 : func_select + 1;
+
+            func_select = func_select + 1 > 3 ? 0 : func_select + 1;
+
+            digitalWrite(MOTOR_PIN, HIGH);
             digitalWrite(LED_PIN, HIGH);
             delay(100);
             digitalWrite(LED_PIN, LOW);
+            digitalWrite(MOTOR_PIN, LOW);
+
             pressed = true;
             pressedTime = millis();
+            if (func_select == 2) {
+                tft.setCursor(0, 30);
+#ifdef ENABLE_BLE_DATA_TRANSMISSION
+                tft.println("BLE Transmission,Now you can read it in your phone!");
+#else
+                tft.println("BLE Transmission is not enable");
+#endif
+            }
         } else {
+#if defined(ARDUINO_OTA_UPDATE)
             if (millis() - pressedTime > 3000) {
                 tft.fillScreen(TFT_BLACK);
                 tft.drawString("Reset WiFi Setting",  20, tft.height() / 2 );
@@ -628,6 +820,7 @@ void loop()
                 wifiManager.erase(true);
                 esp_restart();
             }
+#endif
         }
     } else {
         pressed = false;
@@ -641,6 +834,9 @@ void loop()
         IMU_Show();
         break;
     case 2:
+        BLE_Transmission();
+        break;
+    case 3:
         imu.sleepGyro();
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
@@ -652,6 +848,7 @@ void loop()
         esp_sleep_enable_ext1_wakeup(GPIO_SEL_33, ESP_EXT1_WAKEUP_ANY_HIGH);
         esp_deep_sleep_start();
         break;
+
     default:
         break;
     }

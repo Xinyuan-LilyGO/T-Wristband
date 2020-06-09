@@ -32,6 +32,8 @@
    - Press it a second time to enter deep sleep
    - During deep sleep, touch again to wake up the bracelet
 
+8. The `ENABLE_BLE_DATA_TRANSMISSION` macro is used to test the BLE transmission IMU data example. It is enabled by default. You can use the APPs such as `nRF Connect` and `LightBlue` to connect to view the data
+
 ## Datasheet
 - [LSM9DS1 Sensor](https://www.st.com/resource/en/datasheet/lsm9ds1.pdf)
 - [ST7735](http://www.displayfuture.com/Display/datasheet/controller/ST7735.pdf)
