@@ -10,10 +10,40 @@
 #include "charge.h"
 #include <SparkFunLSM9DS1.h>
 
-// #define FACTORY_HW_TEST          //! Test RTC and WiFi scan when enabled
-// #define ARDUINO_OTA_UPDATE       //! Enable this line OTA update
-#define ENABLE_BLE_DATA_TRANSMISSION    //! Turn on BLE to transmit IMU data
+//! Uncomment this line and a hardware test will be conducted
+// #define FACTORY_HW_TEST
 
+//! Uncomment this line and use WiFi for OTA update
+// #define ARDUINO_OTA_UPDATE
+
+//! Uncomment this line and Bluetooth will be used to transfer IMU data
+#define ENABLE_BLE_DATA_TRANSMISSION
+
+// Uncomment this line and the sensor will be used
+// #define ENABLE_SENSOR
+
+/*
+You need to know using the following functions.
+These three methods are all set as protection members in the original SparkFun_LSM9DS1_Arduino_Library.
+If you need to use them, you need to put the three methods into public members.
+This is just for faster sensor testing. Low current consumption
+
+!!! In actual test, LSM9DS1 consumes about 1 mA !!!
+
+!!!In the actual test, the LSM9DS1 consumes about 1 mA of current.
+    If you do not turn them off, it will consume about 4~6mA!!!
+
+**/
+// #define USE_PROTECTED_MEMBERS
+
+
+
+
+#ifdef ENABLE_BLE_DATA_TRANSMISSION
+#ifndef ENABLE_SENSOR
+#define ENABLE_SENSOR
+#endif
+#endif
 
 #ifndef ST7735_SLPIN
 #define ST7735_SLPIN    0x10
@@ -291,6 +321,7 @@ uint16_t setupIMU()
         return true;
     }
     return false;
+
 }
 
 
@@ -534,6 +565,16 @@ void setup(void)
     tft.setSwapBytes(true);
     tft.pushImage(0, 0,  160, 80, ttgo);
 
+    /*
+    Reduce the brightness,
+    can significantly reduce the current consumption
+    when bright screen
+    If you need to uncomment the comment
+    */
+    // ledcSetup(0, 1000, 8);
+    // ledcAttachPin(TFT_BL, 0);
+    // ledcWrite(0, 10);
+
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
     Wire.setClock(400000);
 
@@ -542,6 +583,8 @@ void setup(void)
 #endif
 
     setupRTC();
+
+#ifdef ENABLE_SENSOR
 
     // Turn on the IMU with configureIMU() (defined above)
     // check the return status of imu.begin() to make sure
@@ -552,6 +595,7 @@ void setup(void)
         Serial.println(status, HEX);
         while (1) ;
     }
+#endif
 
     // After turning the IMU on, configure the interrupts:
     // configureLSM9DS1Interrupts();
@@ -593,7 +637,6 @@ void setup(void)
     if (digitalRead(CHARGE_PIN) == LOW) {
         charge_indication = true;
     }
-
 
     // Lower MCU frequency can effectively reduce current consumption and heat
     setCpuFrequencyMhz(80);
@@ -667,6 +710,7 @@ void RTC_Show()
 
 void getIMU()
 {
+#ifdef ENABLE_SENSOR
     // Update the sensor values whenever new data is available
     if ( imu.gyroAvailable() ) {
         // To read from the gyroscope,  first call the
@@ -692,6 +736,7 @@ void getIMU()
     } else {
         Serial.println("Invalid magnetometer");
     }
+#endif
 }
 
 void IMU_Show()
@@ -700,7 +745,7 @@ void IMU_Show()
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.fillScreen(TFT_BLACK);
     tft.setTextDatum(TL_DATUM);
-
+#ifdef ENABLE_SENSOR
     getIMU();
 
     snprintf(buff, sizeof(buff), "--  ACC  GYR   MAG");
@@ -712,12 +757,19 @@ void IMU_Show()
     snprintf(buff, sizeof(buff), "z %.2f  %.2f  %.2f", imu.calcAccel(imu.az), imu.calcGyro(imu.gz), imu.calcMag(imu.mz));
     tft.drawString(buff, 0, 48);
     delay(200);
+#else
+    tft.setCursor(0, 0);
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.println("Sensor is not enable");
+    delay(200);
+#endif
 
 }
 
 
 void BLE_Transmission()
 {
+#ifdef ENABLE_BLE_DATA_TRANSMISSION
     typedef struct {
         float ax;
         float ay;
@@ -735,12 +787,9 @@ void BLE_Transmission()
     if (millis() - updataRate < 1000) {
         return;
     }
-
-
-#ifdef ENABLE_BLE_DATA_TRANSMISSION
-
     getIMU();
 
+    updataRate = millis();
 
     if (deviceConnected && enableNotify) {
         // Create a structure to send data
@@ -771,9 +820,10 @@ void BLE_Transmission()
         Serial.println();
     }
 #endif
-    updataRate = millis();
 }
 
+
+uint8_t tempRegValue = 0;
 
 void loop()
 {
@@ -804,11 +854,7 @@ void loop()
             pressedTime = millis();
             if (func_select == 2) {
                 tft.setCursor(0, 30);
-#ifdef ENABLE_BLE_DATA_TRANSMISSION
                 tft.println("BLE Transmission,Now you can read it in your phone!");
-#else
-                tft.println("BLE Transmission is not enable");
-#endif
             }
         } else {
 #if defined(ARDUINO_OTA_UPDATE)
@@ -837,7 +883,46 @@ void loop()
         BLE_Transmission();
         break;
     case 3:
+
+#if defined(ENABLE_SENSOR) && defined(USE_PROTECTED_MEMBERS)
+        imu.settings.gyro.lowPowerEnable = true;
+        imu.settings.gyro.enableX = false;
+        imu.settings.gyro.enableY = false;
+        imu.settings.gyro.enableZ = false;
+        imu.settings.gyro.enabled = false;
+
+        imu.settings.mag.enabled = false;
+        imu.settings.mag.lowPowerEnable = true;
+        imu.settings.mag.operatingMode = 11;
+
+        imu.settings.accel.enabled = false;
+        imu.settings.accel.enableX = false;
+        imu.settings.accel.enableY = false;
+        imu.settings.accel.enableZ = false;
+
+        imu.settings.temp.enabled = false;
+
+        /*
+
+        You need to know using the following functions.
+        These three methods are all set as protection members in the original SparkFun_LSM9DS1_Arduino_Library.
+        If you need to use them, you need to put the three methods into public members.
+        This is just for faster sensor testing. Low current consumption
+
+        !!! In actual test, LSM9DS1 consumes about 1 mA !!!
+
+        !!!In the actual test, the LSM9DS1 consumes about 1 mA of current.
+            If you do not turn them off, it will consume about 4~6mA!!!
+
+        **/
+
+        imu.initMag();
+        imu.initAccel();
+        imu.initGyro();
+#else
         imu.sleepGyro();
+#endif
+
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.setTextDatum(MC_DATUM);
         tft.drawString("Press again to wake up",  tft.width() / 2, tft.height() / 2 );
@@ -846,9 +931,9 @@ void loop()
         tft.writecommand(ST7735_SLPIN);
         tft.writecommand(ST7735_DISPOFF);
         esp_sleep_enable_ext1_wakeup(GPIO_SEL_33, ESP_EXT1_WAKEUP_ANY_HIGH);
+        delay(200);
         esp_deep_sleep_start();
         break;
-
     default:
         break;
     }
