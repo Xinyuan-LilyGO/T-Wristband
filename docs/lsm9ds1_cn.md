@@ -33,7 +33,12 @@
     - 按下第二次 将进入深度睡眠
     - 在深度睡眠中,再次触碰 将唤醒手环
 
-8. `ENABLE_BLE_DATA_TRANSMISSION` 宏用于测试BLE传输IMU数据示例 ,默认开启, 可以使用`nRF Connect` , `LightBlue` 等APP 进行连接查看数据
+8. `ENABLE_BLE_DATA_TRANSMISSION` 宏用于测试BLE传输IMU数据示例 ,默认关闭, 可以使用`nRF Connect` , `LightBlue` 等APP 进行连接查看数据
+
+
+9. `ENABLE_SENSOR`宏用于开启LSM9DS1传感器功能.默认关闭
+
+10. `USE_PROTECTED_MEMBERS`宏用于开启LSM9DS1传感器关断模式功能.默认关闭,使用前请确保你已经将SparkFun_LSM9DS1_Arduino_Library 三个成员方法更改为共有成员方法，或者直接使用`libdeps`内的库文件
 
 ## 数据手册
 - [lsm9ds1 Sensor](https://www.st.com/resource/en/datasheet/lsm9ds1.pdf)

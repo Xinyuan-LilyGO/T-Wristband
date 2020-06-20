@@ -32,7 +32,12 @@
    - Press it a second time to enter deep sleep
    - During deep sleep, touch again to wake up the bracelet
 
-8. The `ENABLE_BLE_DATA_TRANSMISSION` macro is used to test the BLE transmission IMU data example. It is enabled by default. You can use the APPs such as `nRF Connect` and `LightBlue` to connect to view the data
+8. The `ENABLE_BLE_DATA_TRANSMISSION` macro is used to test the BLE transmission IMU data example. It is closed by default. You can use APPs such as `nRF Connect` and `LightBlue` to connect to view data
+
+
+9. The `ENABLE_SENSOR` macro is used to enable the LSM9DS1 sensor function. It is disabled by default
+
+10. The `USE_PROTECTED_MEMBERS` macro is used to enable the LSM9DS1 sensor shutdown mode function. It is disabled by default. Before using, please make sure that you have changed the three member methods of `SparkFun_LSM9DS1_Arduino_Library` to the common member method, or directly use the library file in `libdeps`
 
 ## Datasheet
 - [LSM9DS1 Sensor](https://www.st.com/resource/en/datasheet/lsm9ds1.pdf)
