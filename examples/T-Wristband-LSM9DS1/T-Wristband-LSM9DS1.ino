@@ -17,7 +17,7 @@
 // #define ARDUINO_OTA_UPDATE
 
 //! Uncomment this line and Bluetooth will be used to transfer IMU data
-#define ENABLE_BLE_DATA_TRANSMISSION
+// #define ENABLE_BLE_DATA_TRANSMISSION
 
 // Uncomment this line and the sensor will be used
 // #define ENABLE_SENSOR
