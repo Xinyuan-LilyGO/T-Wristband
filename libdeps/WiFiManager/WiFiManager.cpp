@@ -1932,7 +1932,7 @@ bool WiFiManager::erase(bool opt){
     if(opt){
       DEBUG_WM("Erasing NVS");
       int err;
-      esp_err_t err;
+      // esp_err_t err;
       err = nvs_flash_init();
       DEBUG_WM(DEBUG_VERBOSE,"nvs_flash_init: ",err!=ESP_OK ? (String)err : "Success");
       err = nvs_flash_erase();
