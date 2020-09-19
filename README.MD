@@ -10,9 +10,9 @@
 
 <h2 align = "left">📷 Product:</h2>
 
-|                                      Examples                                       |                                                         Product  Link                                                         |                           Schematic                           | Status |
-| :---------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------: | :----: |
-| [Click to view LSM9DS1 Version(点击查看)](./examples/T-Wristband-LSM9DS1/README.MD) | [Click to view product link](https://pt.aliexpress.com/item/4000527495064.html?spm=a2g0o.store_home.hotSpots_1000010030514.0) | [Click to view](./schematic/T_Wristband_lsm9ds1_20200306.pdf) |   ✅    |
-| [Click to view MPU9250 Version(点击查看)](./examples/T-Wristband-MPU9250/README.MD) |                                                           Obsolete                                                            |     [Click to view](./schematic/T_Wristband_mpu9250.pdf)      |   ❌    |
-|   [Click to view MAX3010X (点击查看)](./examples/T-Wristband-MAX3010X/README.MD)    | [Click to view product link](https://pt.aliexpress.com/item/4000527495064.html?spm=a2g0o.store_home.hotSpots_1000010030514.0) |     [Click to view](./schematic/T_Wristband_MAX30102.pdf)     |   ✅    |
+|                                      Examples                                       |                                  Product  Link                                   |                           Schematic                           | Status |
+| :---------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :-----------------------------------------------------------: | :----: |
+| [Click to view LSM9DS1 Version(点击查看)](./examples/T-Wristband-LSM9DS1/README.MD) | [Click to view product link](https://www.aliexpress.com/item/4001162589218.html) | [Click to view](./schematic/T_Wristband_lsm9ds1_20200306.pdf) |   ✅    |
+| [Click to view MPU9250 Version(点击查看)](./examples/T-Wristband-MPU9250/README.MD) | [Click to view product link](https://www.aliexpress.com/item/4001162589218.html) |     [Click to view](./schematic/T_Wristband_mpu9250.pdf)      |   ✅    |
+|   [Click to view MAX3010X (点击查看)](./examples/T-Wristband-MAX3010X/README.MD)    | [Click to view product link](https://www.aliexpress.com/item/4001162589218.html) |     [Click to view](./schematic/T_Wristband_MAX30102.pdf)     |   ✅    |
 
