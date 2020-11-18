@@ -36,7 +36,8 @@
 - [MPU9250 Sensor](https://invensense.tdk.com/wp-content/uploads/2015/02/PS-MPU-9250A-01-v1.1.pdf)
 - [ST7735](http://www.displayfuture.com/Display/datasheet/controller/ST7735.pdf)
 - [ESP32-PICO-D4](https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf)
-
+- [DRV2605](https://www.ti.com/product/DRV2605)
+- 
 ## 引脚定义
 | Name              | Pin    |
 | ----------------- | ------ |
@@ -56,9 +57,9 @@
 | VBUS ADC          | 36     |
 | I2C SDA           | 21     |
 | I2C SCL           | 22     |
-| LED               | 4      |
+| LED and Vibration | 4      |
 | CHARGE Indication | 38     |
 
-
+- 振动模块 使用IO4进行驱动，与LED合并在一起
 
 
