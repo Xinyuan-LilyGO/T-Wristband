@@ -1,8 +1,8 @@
 <h1 align = "center">🌟LilyGo T-Wristband🌟</h1>
 
-- LSM9DS1 is an alternative sensor for MPU9250. How to distinguish the version you purchased, please see the upper right part of the board below to distinguish
+- T-Wristband has two types of sensors, LSM9DS1 and MPU9250 sensors. How to distinguish the version you bought, please see the upper right part of the board below to distinguish
 
-- LSM9DS1 为MPU9250的替代传感器，如何分辨你购买的版本，请看下图板子的右上半部分，进行区分
+- T-Wristband 拥有两种传感器，LSM9DS1 与MPU9250传感器，如何分辨你购买的版本，请看下图板子的右上半部分，进行区分
   
 ![](image/3.jpg)
 
