@@ -372,6 +372,12 @@ void setup(void)
         tempSensor.startConvert();
     } else {
         Serial.println("Unable to communicate with MAX30208.");
+        Serial.println("Unable to communicate with MAX30208.");
+        tft.fillScreen(TFT_BLACK);
+        tft.setCursor(0, 0);
+        tft.println("Unable to communicate with MAX30208.");
+        delay(3000);
+        esp_restart();
     }
 
 #ifdef FACTORY_HW_TEST
