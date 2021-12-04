@@ -1,4 +1,3 @@
-
 #include <pcf8563.h>
 #include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
