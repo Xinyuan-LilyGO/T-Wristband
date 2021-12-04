@@ -16,11 +16,12 @@
    - The final effect is as follows:
         ![](../../image/1.jpg)
 
-   -**For the new version you need to change the macro definition in Setup26_TTGO_T_Wristband**
-      new version :
+   - For the new version you need to change the macro definition in `Setup26_TTGO_T_Wristband.h'
+
+       **new version :**
       ![](../../image/new_version.png)
 
-      older version:
+       **older version :**
       ![](../../image/older_version.png)
 
 4. The board choose **ESP32 Dev Module**, other settings can be kept as default, note that `T-Wristband` does not use PSRAM, please do not turn on PSRAM, and call PSRAM function
