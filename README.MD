@@ -1,5 +1,12 @@
 <h1 align = "center">🌟LilyGo T-Wristband🌟</h1>
 
+**NOTE**
+- 新版本屏幕（绿色标签）需要改变配置。[参考此文档的第3条的配置](examples/T-Wristband-MPU9250/README.MD)
+
+- The new version screen (green label) requires configuration changes.[Refer to section 3 of this document for configuration](examples/T-Wristband-MPU9250/README.MD)
+
+![](image/new_version_green_tag.png)
+
 - T-Wristband has two types of sensors, LSM9DS1 and MPU9250 sensors. How to distinguish the version you bought, please see the upper right part of the board below to distinguish
 
 - T-Wristband 拥有两种传感器，LSM9DS1 与MPU9250传感器，如何分辨你购买的版本，请看下图板子的右上半部分，进行区分
