@@ -20,7 +20,7 @@
 
    - For the new version you need to change the macro definition in `Setup26_TTGO_T_Wristband.h`
 
-       **new version :** `#define ST7735_REDTAB160x80`
+       **new version(green label) :** `#define ST7735_REDTAB160x80`
       ![](../../image/new_version.png)
 
        **older version :** `#define ST7735_GREENTAB160x80`
