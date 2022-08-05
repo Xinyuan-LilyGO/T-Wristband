@@ -1,26 +1,46 @@
 
 # WiFiManager
-ESP8266 WiFi Connection manager with fallback web configuration portal
+## DEVELOPMENT Version
 
-[![Build Status](https://travis-ci.org/tzapu/WiFiManager.svg?branch=development)](https://travis-ci.org/tzapu/WiFiManager)
+Espressif ESPx WiFi Connection manager with fallback web configuration portal
 
-![ESP8266](https://img.shields.io/badge/ESP-8266-000000.svg?longCache=true&style=flat&colorA=CC101F)
-![ESP32](https://img.shields.io/badge/ESP-32-000000.svg?longCache=true&style=flat&colorA=CC101F)
+:warning: This Documentation is out of date, see notes below
+
+![Release](https://img.shields.io/github/v/release/tzapu/WiFiManager?include_prereleases)
+
+[![Build CI Status](https://github.com/tzapu/WiFiManager/actions/workflows/compile_library.yml/badge.svg)](https://github.com/tzapu/WiFiManager/actions/workflows/compile_library.yml)
+
+[![Build CI Status Examples](https://github.com/tzapu/WiFiManager/actions/workflows/compile_examples.yaml/badge.svg)](https://github.com/tzapu/WiFiManager/actions/workflows/compile_examples.yaml)
+
+[![arduino-library-badge](https://www.ardu-badge.com/badge/WiFiManager.svg?)](https://www.ardu-badge.com/WiFiManager)
+
+[![Build with PlatformIO](https://img.shields.io/badge/PlatformIO-Library-orange?)](https://platformio.org/lib/show/567/WiFiManager/installation)
+
+[![ESP8266](https://img.shields.io/badge/ESP-8266-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp8266)
+
+[![ESP32](https://img.shields.io/badge/ESP-32-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp32)
+[![ESP32](https://img.shields.io/badge/ESP-32S2-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp32-s2)
+[![ESP32](https://img.shields.io/badge/ESP-32C3-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp32-c3)
+
+Member to Member Support / Chat
+
+ [![Join the chat at https://gitter.im/tablatronix/WiFiManager](https://badges.gitter.im/tablatronix/WiFiManager.svg)](https://gitter.im/tablatronix/WiFiManager?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+ 
+[![Discord](https://img.shields.io/badge/Discord-WiFiManager-%237289da.svg?logo=discord)](https://discord.gg/dkjJbHwC)
 
 The configuration portal is of the captive variety, so on various devices it will present the configuration dialogue as soon as you connect to the created access point.
 
-First attempt at a library. Lots more changes and fixes to do. Contributions are welcome.
-
-**This works with the ESP8266 Arduino platform with a recent stable release(2.0.0 or newer)**
+**This works with the ESP8266 Arduino platform**
 
 [https://github.com/esp8266/Arduino](https://github.com/esp8266/Arduino)
 
-**This works with the ESP32 Arduino platform with staging** 
+**This works with the ESP32 Arduino platform** 
 
 [https://github.com/espressif/arduino-esp32](https://github.com/espressif/arduino-esp32)
 
 ### Known Issues
 * Documentation needs to be updated, see [https://github.com/tzapu/WiFiManager/issues/500](https://github.com/tzapu/WiFiManager/issues/500)
+-------
 
 ## Contents
  - [How it works](#how-it-works)
@@ -151,8 +171,8 @@ Also see [examples](https://github.com/tzapu/WiFiManager/tree/master/examples).
 
 [PlatformIO](https://platformio.org/) is an emerging ecosystem for IoT development, and 
 is an alternative to using the Arduino IDE. Install `WiFiManager`
-using the platformio [library manager](https://docs.platformio.org/en/latest/librarymanager/index.htm) in your editor, 
-or using the [PlatformIO Core CLI](https://docs.platformio.org/en/latest/userguide/demo.html#library-manager),
+using the platformio [library manager](https://docs.platformio.org/en/latest/librarymanager/index.html#librarymanager) in your editor, 
+or using the [PlatformIO Core CLI](https://docs.platformio.org/en/latest/core/index.html),
 or by adding it to your `platformio.ini` as shown below (recommended approach).
 
 The simplest way is to open the `platformio.ini` file at the root of your project, and `WifiManager` to the common top-level env
@@ -164,12 +184,11 @@ lib_deps =
 	WiFiManager
 ```
 
-If you want to install the development branch, then you'll need to use the `repository#tag` format instead:
 
 ```
 [env]
 lib_deps =
-	https://github.com/tzapu/WiFiManager.git#development
+	https://github.com/tzapu/WiFiManager.git
 ```
 
 ## Documentation
@@ -202,7 +221,15 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 ##### Save settings
 This gets called when custom parameters have been set **AND** a connection has been established. Use it to set a flag, so when all the configuration finishes, you can save the extra parameters somewhere.
 
-See [AutoConnectWithFSParameters Example](https://github.com/tzapu/WiFiManager/tree/master/examples/AutoConnectWithFSParameters).
+
+IF YOU NEED TO SAVE PARAMETERS EVEN ON WIFI FAIL OR EMPTY, you must set `setBreakAfterConfig` to true, or else saveConfigCallback will not be called.
+
+```C++
+//if this is set, it will exit after config, even if connection is unsuccessful.
+    void          setBreakAfterConfig(boolean shouldBreak);
+```
+
+See [AutoConnectWithFSParameters Example](https://github.com/tzapu/WiFiManager/tree/master/examples/Parameters/SPIFFS/AutoConnectWithFSParameters).
 ```cpp
 wifiManager.setSaveConfigCallback(saveConfigCallback);
 ```
@@ -242,7 +269,7 @@ void loop() {
   }
 }
 ```
-See example for a more complex version. [OnDemandConfigPortal](https://github.com/tzapu/WiFiManager/tree/master/examples/OnDemandConfigPortal)
+See example for a more complex version. [OnDemandConfigPortal](https://github.com/tzapu/WiFiManager/tree/master/examples/OnDemand/OnDemandConfigPortal)
 
 #### Exiting from the Configuration Portal
 Normally, once entered, the configuration portal will continue to loop until WiFi credentials have been successfully entered or a timeout is reached.
@@ -264,7 +291,7 @@ Usage scenario would be:
 
 ```
 - if connection to AP fails, configuration portal starts and you can set /change the values (or use on demand configuration portal)
-- once configuration is done and connection is established [save config callback]() is called
+- once configuration is done and connection is established save config callback() is called
 - once WiFiManager returns control to your application, read and save the new values using the `WiFiManagerParameter` object.
 ```cpp
  mqtt_server = custom_mqtt_server.getValue();
@@ -272,7 +299,7 @@ Usage scenario would be:
 This feature is a lot more involved than all the others, so here are some examples to fully show how it is done.
 You should also take a look at adding custom HTML to your form.
 
-- Save and load custom parameters to file system in json form [AutoConnectWithFSParameters](https://github.com/tzapu/WiFiManager/tree/master/examples/AutoConnectWithFSParameters)
+- Save and load custom parameters to file system in json form [AutoConnectWithFSParameters](https://github.com/tzapu/WiFiManager/tree/master/examples/Parameters/SPIFFS/AutoConnectWithFSParameters)
 - *Save and load custom parameters to EEPROM* (not done yet)
 
 #### Custom IP Configuration
@@ -292,6 +319,8 @@ wifiManager.setSTAStaticIPConfig(IPAddress(192,168,0,99), IPAddress(192,168,0,1)
 ```
 There are a couple of examples in the examples folder that show you how to set a static IP and even how to configure it through the web configuration portal.
 
+NOTE: You should fill DNS server if you have HTTP requests with hostnames or syncronize time (NTP). It's the same as gateway ip or a popular (Google DNS: 8.8.8.8).
+
 #### Custom HTML, CSS, Javascript
 There are various ways in which you can inject custom HTML, CSS or Javascript into the configuration portal.
 The options are:
@@ -309,6 +338,7 @@ wifiManager.addParameter(&custom_text);
 Just add the bit you want added as the last parameter to the custom parameter constructor.
 ```cpp
 WiFiManagerParameter custom_mqtt_server("server", "mqtt server", "iot.eclipse", 40, " readonly");
+wifiManager.addParameter(&custom_mqtt_server);
 ```
 
 #### Theming
