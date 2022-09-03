@@ -1,4 +1,4 @@
-## **English | [中文](../../docs/mpu9250_cn.md)**
+## **English | [中文](README_CN.md)**
 
 ## Before use, please read the description below
 
