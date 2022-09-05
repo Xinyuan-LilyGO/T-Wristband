@@ -19,7 +19,7 @@ You can use the [T-Wristband Online Documentation](https://t-wristband-zh-cn.rea
 * [Getting Started](https://t-wristband-zh-cn.readthedocs.io/en/latest/get-started/index.html)
 * [Hardware Reference](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)
 * [Examples](https://t-wristband-zh-cn.readthedocs.io/en/latest/soft-reference/index.html)
-* [Troubleshooting](https://t-wristband-zh-cn.readthedocs.io/en/latest/soft-reference/troubleshooting.html)
+* [Troubleshooting](https://t-wristband-zh-cn.readthedocs.io/en/latest/troubleshooting.html)
 * [Copyrights](https://t-wristband-zh-cn.readthedocs.io/en/latest/COPYRIGHT.html)
 
 ## 📷 Product

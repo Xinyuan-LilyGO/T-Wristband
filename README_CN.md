@@ -17,7 +17,7 @@
 * [快速开始](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/get-started/index.html)
 * [硬件参考](https://docs.espressif.com/projects/arduino-esp32/zh_CN/latest/installing.html)
 * [示例](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/soft-reference/index.html)
-* [故障排查](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/soft-reference/troubleshooting.html)
+* [故障排查](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/troubleshooting.html)
 * [版权](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/COPYRIGHT.html)
 
 ## 📷 Product
