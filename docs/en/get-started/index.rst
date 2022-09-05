@@ -89,6 +89,22 @@ T-Wristband requires the following dependency library support, users can use the
 
     `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ saves the required dependencies, and `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ directory to ``C:\<UserName>\Documents\Arduino\libraries`` directory.
 
+Configure TFT_eSPI
+===================
+
+.. note::
+
+    If you use the library files in the `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ directory, you can skip this step
+
+Modify the ``C:\<UserName>\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h`` file:
+
+* Comment out the line ``#include <User_Setup.h>``
+* Find the line ``#include <User_Setups/Setup26_TTGO_T_Wristband.h>`` and uncomment the previous
+
+.. warning:: 
+
+    If the screen has reversed colors, please refer to :ref:`Troubleshooting <tft_issue>`
+
 Build example
 ==============
 
@@ -99,7 +115,7 @@ Open the corresponding example, select ``ESP32 Dev Module`` for the development 
     T-Wristband does not use PSRAM, please do not enable PSRAM and call PSRAM related functions.
 
 Programmer burning
-===============
+===================
 
 Using the Programmer, connect it to the T-Wristband via a cable.
 

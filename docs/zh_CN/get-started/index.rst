@@ -89,6 +89,22 @@ T-Wristband 需要以下依赖库支持，用户可以用过库管理安装。
 
     `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ 保存了所需要的依赖库，将 `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ 目录内所有文件拷贝到 ``C:\<UserName>\Documents\Arduino\libraries`` 目录即可。
 
+配置 TFT_eSPI
+==============
+
+.. note::
+
+    如果使用 `libdeps <https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps>`_ 目录中库文件,可以跳过这一步
+
+修改 ``C:\<UserName>\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h`` 文件：
+
+* 将 ``#include <User_Setup.h>`` 这一行注释掉
+* 找到 ``#include <User_Setups/Setup26_TTGO_T_Wristband.h>`` 这一行，取消前面的注释
+
+.. warning:: 
+
+    如果屏幕出现反色的现象，请参考 :ref:`故障排查 <tft_issue>`
+
 编译例程
 ========
 

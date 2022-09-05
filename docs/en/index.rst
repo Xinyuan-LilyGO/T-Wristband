@@ -8,4 +8,5 @@ T-Wristband Programming Guide
     Get Started <get-started/index.rst>
     H/W Reference <hw-reference/index.rst>
     Examples <soft-reference/index.rst>
+    Troubleshooting <troubleshooting>
     Copyrights <COPYRIGHT>

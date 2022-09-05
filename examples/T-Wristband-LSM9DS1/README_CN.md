@@ -28,7 +28,7 @@
 5. `ARDUINO_OTA_UPDATE` 宏用于**WiFiManager**和**OTA更新**,默认为关闭,如需开启请在`sketch`中开启
     - 当`ARDUINO_OTA_UPDATE`开启后,触摸按住按钮三秒钟进行`WiFi`重置
     - 开启OTA更新后,你可以在Arduino IDE端口中选择 `T-Wristband` 进行空中升级,如下图
-        ![](../docs/_static/readme/2.jpg)
+        ![](../../docs/_static/readme/2.jpg)
 
 6. `FACTORY_HW_TEST` 宏用于测试手环的硬件状态是否正常,默认关闭,如需开启请在`sketch`中开启
 

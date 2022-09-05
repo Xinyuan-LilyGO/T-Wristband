@@ -19,7 +19,7 @@
     - 将 文件头部`#include <User_Setup.h>` 注释掉
     - 找到 `#include <User_Setups/Setup26_TTGO_T_Wristband.h>`,取消前面的注释,保存退出
     - 最终效果如下图:
-        ![](../docs/_static/readme/1.jpg)
+        ![](../../docs/_static/readme/1.jpg)
 
 4. 板子可以选择**ESP32 Dev Module**，其他设置可以保持默认,注意 `T-Wristband` 没有使用PSRAM,请勿开启PSRAM,和调用PSRAM的功能函数
 
@@ -27,7 +27,7 @@
 
     - 当`ARDUINO_OTA_UPDATE`开启后,触摸按住按钮三秒钟进行`WiFi`重置
     - 开启OTA更新后,你可以在Arduino IDE端口中选择 `T-Wristband` 进行空中升级,如下图
-        ![](../docs/_static/readme/2.jpg)
+        ![](../../docs/_static/readme/2.jpg)
 
 6. `FACTORY_HW_TEST` 宏用于测试手环的硬件状态是否正常,默认关闭,如需开启请在`sketch`中开启
 7. 触摸按钮当检测到按下则切换下一个功能

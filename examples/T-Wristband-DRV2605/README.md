@@ -1,12 +1,12 @@
 
-## **English | [中文](README_CN.md)**
+**English | [中文](README_CN.md)**
 
 1. Install the corresponding driver according to the serial communication board you use
 
     - [CP21xx Drivers](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers)
     - [CH340 Drivers](http://www.wch-ic.com/search?q=ch340&t=downloads)
 
-2. Install the dependent libraries in the following list, the required library files have been placed in the `libdeps` by default, please copy all the files in the`libdeps` directory to `C:\<UserName>\Documents\Arduino\libraries` In the catalog
+2. Install the dependent libraries in the following list, the required library files have been placed in the `libdeps` by default, please copy all the files in the `libdeps` directory to `C:\<UserName>\Documents\Arduino\libraries` In the catalog
 
     - [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
     - [Adafruit_DRV2605_Library](https://github.com/adafruit/Adafruit_DRV2605_Library)
@@ -22,13 +22,13 @@
 
     - For the new version you need to change the macro definition in `Setup26_TTGO_T_Wristband.h`
 
-       **new version :** `#define ST7735_REDTAB160x80`
+        **new version**: `#define ST7735_REDTAB160x80`
 
-      ![](../../docs/_static/readme/new_version.png)
+        ![](../../docs/_static/readme/new_version.png)
 
-       **older version :** `#define ST7735_GREENTAB160x80`
+        **older version**: `#define ST7735_GREENTAB160x80`
 
-      ![](../../docs/_static/readme/older_version.png)
+        ![](../../docs/_static/readme/older_version.png)
 
 4. The board choose **ESP32 Dev Module**, other settings can be kept as default, note that `T-Wristband` does not use PSRAM, please do not turn on PSRAM, and call PSRAM function
 

@@ -16,22 +16,22 @@
    - Comment out the file header `#include <User_Setup.h>`
    - Find `#includen <User_Setups/Setup26_TTGO_T_Wristband.h>`, cancel the previous comment, save and exit
    - The final effect is as follows:
-        ![](../../image/1.jpg)
+        ![](../../docs/_static/readme/1.jpg)
 
    - For the new version you need to change the macro definition in `Setup26_TTGO_T_Wristband.h`
 
        **new version(green label) :** `#define ST7735_REDTAB160x80`
-      ![](../../image/new_version.png)
+      ![](../../docs/_static/readme/new_version.png)
 
        **older version :** `#define ST7735_GREENTAB160x80`
-      ![](../../image/older_version.png)
+      ![](../../docs/_static/readme/older_version.png)
 
 4. The board choose **ESP32 Dev Module**, other settings can be kept as default, note that `T-Wristband` does not use PSRAM, please do not turn on PSRAM, and call PSRAM function
 
 5. The `ARDUINO_OTA_UPDATE` macro is used for **WiFiManager** and **OTA update**, the default is off, if you need to open, please open in `sketch`
    - When `ARDUINO_OTA_UPDATE` is turned on, touch and hold the button for three seconds to reset `WiFi`
    - After enabling OTA update, you can select `T-Wristband` in the Arduino IDE port for over-the-air upgrade, as shown below
-        ![](../../image/2.jpg)
+        ![](../../docs/_static/readme//2.jpg)
 
 6. The `FACTORY_HW_TEST` macro is used to test whether the hardware status of the bracelet is normal, and it is closed by default. If you need to open it, please open it in ` sketch`
    
@@ -68,7 +68,3 @@
 | I2C SCL           | 22     |
 | LED and Vibration | 4      |
 | CHARGE Indication | 38     |
-
-
-
-
