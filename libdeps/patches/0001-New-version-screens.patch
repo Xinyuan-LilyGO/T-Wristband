@@ -1,0 +1,15 @@
+diff --git a/libdeps/TFT_eSPI/User_Setups/Setup26_TTGO_T_Wristband.h b/libdeps/TFT_eSPI/User_Setups/Setup26_TTGO_T_Wristband.h
+index b6b546a..6bc5381 100644
+--- a/libdeps/TFT_eSPI/User_Setups/Setup26_TTGO_T_Wristband.h
++++ b/libdeps/TFT_eSPI/User_Setups/Setup26_TTGO_T_Wristband.h
+@@ -14,8 +14,8 @@
+ 
+ #define TFT_BACKLIGHT_ON HIGH  // HIGH or LOW are options
+ 
+-#define ST7735_GREENTAB160x80 // For 160 x 80 display (BGR, inverted, 26 offset)
+-//#define ST7735_REDTAB160x80
++// #define ST7735_GREENTAB160x80 // For 160 x 80 display (BGR, inverted, 26 offset)
++#define ST7735_REDTAB160x80
+ 
+ #define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
+ #define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
