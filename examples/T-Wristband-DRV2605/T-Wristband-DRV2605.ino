@@ -12,7 +12,7 @@
 
 #define ENABLE_DRV2605              //Turn on the external haptic module
 #define FACTORY_HW_TEST             //! Test RTC and WiFi scan when enabled
-// #define ENABLE_OTA_UPDATE      //! Enable this line OTA update
+// #define ARDUINO_OTA_UPDATE      //! Enable this line OTA update
 
 
 #ifdef ENABLE_DRV2605
@@ -21,7 +21,7 @@ Adafruit_DRV2605 drv;
 #endif
 
 
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
 //  git clone -b development https://github.com/tzapu/WiFiManager.git
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 #include <ESPmDNS.h>
@@ -48,7 +48,7 @@ extern MPU9250 IMU;
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 PCF8563_Class rtc;
 
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
 WiFiManager wifiManager;
 #endif
 
@@ -69,7 +69,7 @@ uint32_t pressedTime = 0;
 bool charge_indication = false;
 
 uint8_t hh, mm, ss ;
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
 void configModeCallback (WiFiManager *myWiFiManager)
 {
     Serial.println("Entered config mode");
@@ -228,7 +228,7 @@ void factoryTest()
 
 void setupWiFi()
 {
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
     WiFiManager wifiManager;
     //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
     wifiManager.setAPCallback(configModeCallback);
@@ -239,7 +239,7 @@ void setupWiFi()
 
 void setupOTA()
 {
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
     // Port defaults to 3232
     // ArduinoOTA.setPort(3232);
 
@@ -477,7 +477,7 @@ void IMU_Show()
 
 void loop()
 {
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
     ArduinoOTA.handle();
 #endif
 
@@ -515,7 +515,7 @@ void loop()
             pressed = true;
             pressedTime = millis();
         } else {
-#ifdef ENABLE_OTA_UPDATE
+#ifdef ARDUINO_OTA_UPDATE
             if (millis() - pressedTime > 3000) {
                 tft.fillScreen(TFT_BLACK);
                 tft.drawString("Reset WiFi Setting",  20, tft.height() / 2 );
