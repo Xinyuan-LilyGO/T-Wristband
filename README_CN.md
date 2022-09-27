@@ -12,7 +12,7 @@
 
 ## 文档
 
-您可以通过【T-Wristband 在线文档】（https://t-wristband-zh-cn.readthedocs.io/en/latest）获取本项目的所有信息。
+您可以通过 [T-Wristband 在线文档](https://t-wristband-zh-cn.readthedocs.io/en/latest) 获取本项目的所有信息。
 
 * [快速开始](https://t-wristband-zh-cn.readthedocs.io/zh_CN/latest/get-started/index.html)
 * [硬件参考](https://docs.espressif.com/projects/arduino-esp32/zh_CN/latest/installing.html)
