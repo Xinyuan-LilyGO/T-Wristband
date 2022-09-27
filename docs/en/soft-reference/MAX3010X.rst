@@ -1,5 +1,1 @@
-*********
-MAX3010X
-*********
-
-.. include:: ../../../examples/T-Wristband-MAX3010X/README_CN.md
+.. include:: ../../../examples/T-Wristband-MAX3010X/README.rst

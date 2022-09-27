@@ -66,6 +66,8 @@ T-Wristband 支持以下功能：
 .. _CP21xx Drivers: https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers
 .. _CH340 Drivers: http://www.wch-ic.com/search?q=ch340&t=downloads
 
+.. _安装依赖库:
+
 安装依赖库
 ==========
 
@@ -77,6 +79,7 @@ T-Wristband 需要以下依赖库支持，用户可以用过库管理安装。
 * `SparkFun_LSM9DS1_Arduino_Library`_
 * `Adafruit_DRV2605_Library`_
 * `SparkFun_MAX3010x_Sensor_Library`_
+* `MAX30208_Library`_
 
 .. _TFT_eSPI: https://github.com/Bodmer/TFT_eSPI
 .. _PCF8563_Library: https://github.com/lewisxhe/PCF8563_Library
@@ -84,6 +87,7 @@ T-Wristband 需要以下依赖库支持，用户可以用过库管理安装。
 .. _SparkFun_LSM9DS1_Arduino_Library: https://github.com/sparkfun/SparkFun_LSM9DS1_Arduino_Library
 .. _Adafruit_DRV2605_Library: https://github.com/adafruit/Adafruit_DRV2605_Library
 .. _SparkFun_MAX3010x_Sensor_Library: https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+.. _MAX30208_Library: https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband/tree/master/libdeps/MAX30208_Library
 
 .. note::
 

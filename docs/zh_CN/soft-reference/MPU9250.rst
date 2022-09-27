@@ -1,5 +1,1 @@
-*********
-MAX30208
-*********
-
-.. include:: ../../../examples/T-Wristband-MPU9250/README_CN.md
+.. include:: ../../../examples/T-Wristband-MPU9250/README_CN.rst

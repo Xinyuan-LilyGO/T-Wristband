@@ -66,6 +66,8 @@ Due to the shortage of chips and the price increase, T-Wristband's programmer ha
 .. _CP21xx Drivers: https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers
 .. _CH340 Drivers: http://www.wch-ic.com/search?q=ch340&t=downloads
 
+.. _Install dependent libraries:
+
 Install dependent libraries
 ============================
 
@@ -128,7 +130,7 @@ T-Wristband does not have an onboard usb to ttl chip due to space problems, and 
 #. ``WiFi`` reset by touching and holding the button for three seconds
 #. Select ``T-Wristband`` in Arduino IDE port for over-the-air upgrade
 
-Pin layout
+Pinout
 ===========
 
 ==================== =========

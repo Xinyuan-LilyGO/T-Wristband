@@ -1,5 +1,1 @@
-*********
-MAX30208
-*********
-
-.. include:: ../../../examples/T-Wristband-MAX30208/README_CN.md
+.. include:: ../../../examples/T-Wristband-MAX30208/README_CN.rst

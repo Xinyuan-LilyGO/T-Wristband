@@ -1,5 +1,1 @@
-*********
-DRV2605
-*********
-
-.. include:: ../../../examples/T-Wristband-DRV2605/README_CN.md
+.. include:: ../../../examples/T-Wristband-DRV2605/README_CN.rst
