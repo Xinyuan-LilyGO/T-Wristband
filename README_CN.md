@@ -2,6 +2,8 @@
 
 **NOTE**
 
+- [更漂亮的应用界面来自于 yacubovvs/CubOS](https://github.com/yacubovvs/CubOS)
+- 
 - 新版本屏幕（绿色标签）需要改变配置。[参考此文档的第3条的配置](examples/T-Wristband-MPU9250/README.MD)
 
 ![](docs/_static/readme/new_version_green_tag.png)

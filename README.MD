@@ -4,6 +4,8 @@
 
 **NOTE**
 
+- [Better bracelet application from yacubovvs/CubOS](https://github.com/yacubovvs/CubOS)
+
 - The new version screen (green label) requires configuration changes. [Refer to section 3 of this document for configuration](examples/T-Wristband-MPU9250/README.MD)
 
 ![](docs/_static/readme/new_version_green_tag.png)
